@@ -1,0 +1,557 @@
+    <meta charset="UTF-8">
+    <meta name="viewport" 
+          content="width=device-width, initial-scale=1.0">
+    <title>OpenP2P</title>
+    <style>
+        :root {
+            --bg-main: #0a0c10;
+            --bg-card: #131722;
+            --bg-nav: #161b26;
+            --primary: #D9A74A;
+            --primary-hover: #4752c4;
+            --secondary: #2d3748;
+            --secondary-hover: #3f4e66;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+			
+			 /* ... Tus fondos se quedan igual ... */
+			--primary: #D9A74A; 
+			--primary-hover: #B88B3A;  
+
+			/* ... Tus fondos se quedan igual ... 
+			--primary: #818cf8;    
+			--primary-hover: #6366f1;
+			*/
+        }
+
+        body {font-family: 'Segoe UI', Roboto, sans-serif;background-color: var(--bg-main);color: var(--text-main);margin: 0;display: flex;flex-direction: column;min-height: 100vh;}
+        .navbar {background-color: var(--bg-nav);padding: 15px 40px;display: flex;justify-content: space-between;align-items: center;border-bottom: 1px solid #222b3c;box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);}
+        .nav-logo {font-size: 1.3rem;font-weight: 800;color: var(--text-main);text-decoration: none;}
+        .nav-logo span {color: var(--primary);}
+        .status-panel {display: flex;align-items: center;gap: 15px;}
+        .server-status {display: flex;align-items: center;gap: 8px;font-size: 0.85rem;padding: 6px 14px;border-radius: 20px;font-weight: 600;}
+        .server-status.online {background: rgba(16, 185, 129, 0.1);color: var(--accent-green);border: 1px solid rgba(16, 185, 129, 0.2);}
+        .server-status.offline {background: rgba(239, 68, 68, 0.1);color: var(--accent-red);border: 1px solid rgba(239, 68, 68, 0.2);}
+        .metric-badge {font-size: 0.85rem;background: rgba(255, 255, 255, 0.05);border: 1px solid rgba(255, 255, 255, 0.1);padding: 6px 14px;border-radius: 20px;color: var(--text-muted);display: inline-block;} /* Corregido: visible para mostrar perfiles/chats */
+        .metric-badge strong {color: #ffffff;}
+        .status-dot {width: 8px;height: 8px;border-radius: 50%;}
+        .online .status-dot {background-color: var(--accent-green);animation: pulse 2s infinite;}
+        .offline .status-dot {background-color: var(--accent-red);}
+        .main-content {flex: 1;display: flex;flex-direction: column;align-items: center;justify-content: center;padding: 40px 20px;}
+        .welcome-container {max-width: 650px;padding: 30px 40px;background-color: var(--bg-card);border-radius: 28px;box-shadow: 0 20px 50px rgba(0,0,0,0.6);border: 1px solid #1e2538;text-align: center;}
+        .commercial-tag {display: inline-block;background: rgba(88, 101, 242, 0.1);color: var(--primary);padding: 6px 16px;border-radius: 30px;font-size: 0.85rem;font-weight: 700;text-transform: uppercase;letter-spacing: 1px;margin-bottom: 20px;}
+        h1 {color: var(--text-main);font-size: 2.8rem;margin: 0 0 15px 0;font-weight: 800;}
+        h1 em {font-style: normal;color: var(--primary);}
+        p {color: var(--text-muted);line-height: 1.7;font-size: 1.15rem;margin-bottom: 40px;}
+        .btn-group {display: flex;gap: 20px;justify-content: center;flex-wrap: wrap;}
+        .portal-btn {padding: 18px 32px;font-size: 1rem;font-weight: 700;color: white;border: none;border-radius: 16px;cursor: pointer;text-decoration: none;transition: all 0.25s ease;}
+        .portal-btn:hover {transform: translateY(-3px);}
+        .btn-register {background-color: var(--secondary);border: 1px solid #3f4e66;}
+        .btn-register:hover {background-color: var(--secondary-hover);}
+        .btn-explore {background-color: var(--primary);}
+        .btn-explore:hover {background-color: var(--primary-hover);}
+		
+		/* ================= ESTILOS POP-UP ADAPTADOS ================= */
+.modal {  
+    display: none;   
+    position: fixed;   
+    z-index: 1000;   
+    left: 0;  
+    top: 0;  
+    width: 100%;   
+    height: 100%;   
+    background-color: rgba(6, 8, 12, 0.85); /* Fondo oscuro que hace juego con tu --bg-main */
+    backdrop-filter: blur(6px); /* Desenfoque cinemático moderno */
+}
+
+.modal-contenido {  
+    background-color: var(--bg-card); /* Caja usando el fondo de tus tarjetas */
+    margin: 12% auto;   
+    padding: 35px 30px;  
+    border-radius: 24px; /* Bordes redondeados integrados con tu diseño */
+    width: 90%;  
+    max-width: 420px; 
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);  
+    position: relative;  
+    text-align: center;
+    border: 1px solid #1e2538; /* Borde sutil idéntico a tus contenedores */
+}
+
+/* Títulos del popup con tus fuentes y colores */
+.modal-contenido h2 {
+    color: var(--text-main);
+    font-size: 1.8rem;
+    margin: 0 0 10px 0;
+    font-weight: 800;
+}
+
+.modal-contenido p {
+    font-size: 1rem;
+    margin-bottom: 25px;
+}
+
+/* Botón de cerrar (X) integrado */
+.btn-cerrar {  
+    position: absolute;  
+    right: 20px;  
+    top: 15px;  
+    color: var(--text-muted);  
+    font-size: 26px;  
+    font-weight: bold;  
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+.btn-cerrar:hover {  
+    color: var(--accent-red); /* Cambia a tu rojo de alerta al pasar el cursor */
+}
+
+/* Campo input estilizado en modo oscuro */
+#inputUsuario {  
+    width: 100%;  
+    padding: 14px 20px;  
+    margin-bottom: 20px;  
+    background-color: var(--bg-main);
+    border: 1px solid #222b3c;  
+    border-radius: 12px;  
+    box-sizing: border-box;  
+    font-size: 1rem;
+    color: var(--text-main);
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+#inputUsuario:focus {
+    border-color: var(--primary); /* Brillo azul al escribir */
+}
+
+/* Texto legal pequeño debajo del botón */
+.texto-aviso {  
+    font-size: 0.8rem;  
+    color: var(--text-muted);  
+    margin-top: 20px;  
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+.texto-aviso a {  
+    color: var(--primary);  
+    text-decoration: none;
+    font-weight: 600;
+}
+.texto-aviso a:hover {  
+    text-decoration: underline;
+    color: var(--primary-hover);
+}
+
+		.zona-avatar-upload {
+    margin: 15px 0;
+    padding: 15px;
+    border: 2px dashed #222b3c;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.01);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 90px;
+}
+.zona-avatar-upload:hover, .zona-avatar-upload.dragover {
+    border-color: var(--accent-color, #3b82f6);
+    background-color: rgba(255, 255, 255, 0.03);
+}
+.zona-avatar-upload p {
+    font-size: 0.9rem;
+    margin: 0 0 4px 0;
+    color: #e2e8f0;
+}
+.zona-avatar-upload span {
+    font-size: 0.75rem;
+    color: #8e9bb0;
+}
+/* Círculo de previsualización de la foto */
+.avatar-preview-circle {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid var(--accent-color, #3b82f6);
+    margin-bottom: 5px;
+}
+
+		
+		
+        .footer {background-color: var(--bg-nav);padding: 30px 40px;text-align: center;border-top: 1px solid #222b3c;font-size: 0.85rem;color: var(--text-muted);line-height: 1.6;}
+        .footer-links {margin-bottom: 15px;display: flex;justify-content: center;gap: 25px;flex-wrap: wrap;}
+        .footer-links a {color: var(--text-muted);text-decoration: none;font-weight: 600;}
+        .footer-links a.policy-link {color: var(--primary);}
+        @keyframes pulse {0% { transform: scale(0.95); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.5; }}
+        @media (max-width: 768px) {
+            .navbar {padding: 15px 20px;flex-direction: column;gap: 15px;}
+            .status-panel {width: 100%;justify-content: center;flex-wrap: wrap;gap: 8px;}
+            .welcome-container {padding: 35px 20px;border-radius: 20px;}
+            h1 {font-size: 2.2rem;}
+            .btn-group {flex-direction: column;width: 100%;gap: 12px;}
+        }
+
+        .portal-btn.disabled-btn {opacity: 0.3;cursor: not-allowed !important;pointer-events: none;background-color: #334155 !important;border-color: #1e293b !important;box-shadow: none !important;transform: none !important;color: #64748b !important;}
+    </style>
+
+
+    <!-- CABECERA -->
+    <header class="navbar">
+        <a href="#" class="nav-logo">
+            🔀 App <span>OpenP2P</span>
+        </a>
+        
+        <div class="status-panel">
+            <div id="serverStatus" class="server-status offline">
+                <span class="status-dot"></span>
+                <span id="statusText">Comprobando red...</span>
+            </div>
+            <div id="profilesBadge" class="metric-badge">
+                👥 <span style="color: var(--text-main);">Personas en línea:</span> <strong style="color:var(--primary);" id="profilesCount">0</strong>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+		<div class="welcome-container">
+            <span class="commercial-tag">
+                🌿 Comunicaciones Seguras Sin Huella Digital
+            </span>
+            
+            <h1>Inicia tu <em>conexión</em></h1>
+            <p>Encuentra tu preocupación o crea la tuya propia, conéctate con otras personas y comparte tu pensamiento. 
+			Todo ocurre en tiempo real entre vuestros navegadores: conecta, encuentra, chatea y comparte, con la máxima privacidad que solo nuestra plataforma puede ofrecerte.
+			<br>Sin registros ni cuentas: Entras, conectas, encuentras y hablas.
+			<br>Sin perfiles: Nada de lo que compartes se guarda en ningún servidor.
+			<br>Sin coste: No hay que pagar nada. Gratis total.
+			<br>Directo entre navegadores: Tus mensajes enviados se quedan en tu dispositivo. Nada queda registrado en internet.</p>
+            
+            <div class="btn-group">
+                <a id="btnAbrirPopup" href="#" class="portal-btn btn-register"> Entrar al Chat</a>
+            </div>
+		</div>
+
+<!-- ================= ESTRUCTURA DEL POP-UP MODAL ================= -->
+<div id="miPopup" class="modal">
+  <div class="modal-contenido">
+	<!-- Botón para cerrar (X) -->
+	<span class="btn-cerrar">&times;</span>
+	
+	<h2>Identificación</h2>
+	<p>Por favor, introduce un nombre o un alias para acceder a la plataforma.</p>
+	
+	<!-- Input estilizado -->
+	<input type="text" id="inputUsuario" placeholder="Introduce un nombre o alias..." autocomplete="off">
+	
+	<!-- NUEVO: Zona Drag & Drop para foto de perfil (Opcional) -->
+	<div id="drop-zone-avatar" class="zona-avatar-upload">
+		<div id="avatar-preview" class="avatar-preview-circle" style="display: none;"></div>
+		<div id="avatar-placeholder-text">
+			<p>📸 Arrastra tu foto de perfil aquí</p>
+			<span>o haz clic para explorar (Opcional)</span>
+		</div>
+		<input type="file" id="avatar-input" accept="image/*" style="display: none;" />
+	</div>
+
+	<!-- Botón que hereda tus estilos de botón principal -->
+	<button id="btnEnviar" class="portal-btn btn-explore" style="width: 100%;">Ingresar a la plataforma</button>
+	
+	<!-- Texto de términos legal solicitado -->
+	<p class="texto-aviso">
+	  Al ingresar a la plataforma, confirmas que aceptas la <a href="politica.html" target="_blank" class="policy-link">política de la web</a>
+	</p>
+  </div>
+</div>
+
+
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="politica.html" target="_blank" 
+               class="policy-link">Política de la Web</a>
+			<span class="separador" aria-hidden="true">|</span>
+            <a href="seguridad.html" target="_blank"
+				class="policy-link"> Seguridad P2P</a>
+        </div>
+        <div>
+            &copy; 2026 App OpenP2P • Comunicaciones Cifradas, Privadas y Descentralizadas
+        </div>
+    </footer>
+
+    <script>
+	
+		// Obtener los elementos del DOM
+		const modal = document.getElementById("miPopup");
+		const btnAbrir = document.getElementById("btnAbrirPopup");
+		const btnCerrar = document.querySelector(".btn-cerrar");
+		const btnEnviar = document.getElementById("btnEnviar");
+		const inputUsuario = document.getElementById("inputUsuario");
+
+		let socket;
+		
+		
+		// 1. Abrir el pop-up al hacer clic en el botón principal
+		btnAbrir.addEventListener("click", () => {
+			localStorage.removeItem('chatP2PNombre');
+			localStorage.removeItem('chatP2PFoto');
+			modal.style.display = "block";
+			inputUsuario.focus(); // Pone el cursor automáticamente en el campo
+		});
+
+		// 2. Cerrar el pop-up al hacer clic en la (X)
+		btnCerrar.addEventListener("click", () => {
+			modal.style.display = "none";
+		});
+
+		// 3. Cerrar el pop-up si hacen clic fuera de la caja blanca
+		window.addEventListener("click", (event) => {
+			if (event.target === modal) {
+			modal.style.display = "none";
+			}
+		});
+
+		function procesarAcceso() {
+			const nombreUsuario = inputUsuario.value.trim();
+
+			if (nombreUsuario === "") {
+				alert("ATENCIÓN\nPor favor, identifícate para continuar.");
+				return; 
+			}
+
+			if (!socket || socket.readyState !== WebSocket.OPEN) {
+				alert("ATENCIÓN\nError: No hay conexión activa con el servidor.");
+				return;
+			}
+
+			// Escuchamos temporalmente la respuesta del servidor para validar el nombre
+			socket.onmessage = function(event) {
+				const datos = JSON.parse(event.data);
+
+				if (datos.tipo === 'resultado-validacion') {
+					if (datos.valido) {
+						// 1. Guardamos correctamente en el localStorage
+						localStorage.setItem('chatP2PNombre', nombreUsuario);
+						if (localStorage.getItem('chatP2PFoto') === null) localStorage.setItem('chatP2PFoto', '');
+
+						// 2. Rompemos el evento 'onclose' para evitar bucles de reconexión
+						socket.onclose = null; 
+						
+						// 3. Cerramos el WebSocket del index de forma limpia
+						socket.close();
+
+						// 4. Redirigimos a la pantalla del chat
+						window.location.replace('chat.html');
+					} else {
+						alert("ATENCIÓN\nEl nombre o alias '" + nombreUsuario + "' ya está en uso. Por favor, elige otro.");
+					}
+				}
+			};
+
+			// Enviamos el nombre al servidor para comprobar si ya existe
+			socket.send(JSON.stringify({
+				tipo: 'validar-nombre',
+				nombre: nombreUsuario
+			}));
+		}
+
+		// Asignamos la función al evento Click del botón
+		btnEnviar.addEventListener("click", procesarAcceso);
+
+		// CORREGIDO: Asignamos la misma función al pulsar Enter para que guarde los datos
+		inputUsuario.addEventListener('keypress', (e) => { 
+			if (e.key === 'Enter') {
+				procesarAcceso(); 
+			}
+		});
+
+		function contadorUsuariosConectados() {
+		
+			socket.onmessage = (event) => {
+				const datos = JSON.parse(event.data);
+				if (datos.tipo === 'contador-usuarios-conectados') {
+					document.getElementById('profilesCount').innerText = datos.total || 0;
+				}
+			};
+			
+			// Enviamos el nombre al servidor para comprobar si ya existe
+			socket.send(JSON.stringify({
+				tipo: 'contador-usuarios-conectados'
+			}));
+		}
+
+        function conectarServidor() {
+            // Conectamos directamente al puerto de tu server.js
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+			socket = new WebSocket(`${protocol}//${window.location.host}`);
+
+            socket.onopen = () => {
+				serverStatus.classList.remove('offline');
+				serverStatus.classList.add('online');
+				statusText.style="color: #fff";
+				statusText.innerHTML = `Red <span style='color: var(--primary)';>OpenP2P</span> activa`;
+				btnAbrir.classList.remove('disabled-btn');
+				contadorUsuariosConectados();
+            };
+			
+			socket.onerror = () => {
+				marcarServidorOffline();
+			};
+
+			socket.onclose = () => {
+				marcarServidorOffline();
+				// Intenta reconectar autom谩ticamente cada 5 segundos
+                setTimeout(conectarServidor, 5000);
+			};
+        }
+		
+		
+		function marcarServidorOffline() {
+			serverStatus.classList.remove('online');
+			serverStatus.classList.add('offline');
+			statusText.innerText = 'Red desconectada';
+			btnAbrir.classList.add('disabled-btn');
+		}
+		
+		// 1. Obtenemos las referencias de los elementos HTML
+		const dropZoneAvatar = document.getElementById('drop-zone-avatar');
+		const avatarInput = document.getElementById('avatar-input');
+		const avatarPreview = document.getElementById('avatar-preview');
+		const avatarText = document.getElementById('avatar-placeholder-text');
+
+		// Variable global donde se almacena temporalmente la foto (antes de guardarla)
+		let fotoBase64 = ""; 
+
+		// ==========================================
+		// CONTROL DE CLIC: Abre el explorador de archivos
+		// ==========================================
+		dropZoneAvatar.addEventListener('click', () => {
+			avatarInput.click(); // Simula el clic en el input oculto
+		});
+
+		// Cuando el usuario elige el archivo desde el explorador tradicional
+		avatarInput.addEventListener('change', (e) => {
+			if (e.target.files.length > 0) {
+				procesarFotoPerfil(e.target.files[0]); // Enviamos solo el primer archivo
+			}
+		});
+
+		// ==========================================
+		// CONTROL DE DRAG & DROP: Evita que se abra en otra pestaña
+		// ==========================================
+
+		// Previene el comportamiento por defecto en todos estos eventos obligatoriamente
+		['dragenter', 'dragover', 'dragleave', 'drop'].forEach(nombreEvento => {
+			dropZoneAvatar.addEventListener(nombreEvento, (e) => {
+				e.preventDefault(); // <-- ESTO es lo que evita que se abra en otra pestaña
+				e.stopPropagation();
+			});
+		});
+
+		// Efecto visual: cambia de color cuando la foto está "flotando" encima
+		['dragenter', 'dragover'].forEach(nombreEvento => {
+			dropZoneAvatar.addEventListener(nombreEvento, () => {
+				dropZoneAvatar.classList.add('dragover');
+			});
+		});
+
+		// Efecto visual: quita el color si el usuario saca la foto sin soltarla
+		['dragleave', 'drop'].forEach(nombreEvento => {
+			dropZoneAvatar.addEventListener(nombreEvento, () => {
+				dropZoneAvatar.classList.remove('dragover');
+			});
+		});
+
+		// Cuando el usuario SUELTA la foto dentro de la zona
+		dropZoneAvatar.addEventListener('drop', (e) => {
+			const dt = e.dataTransfer;
+			const archivos = dt.files;
+
+			if (archivos.length > 0) {
+				procesarFotoPerfil(archivos[0]); // Enviamos solo el primer archivo de la lista
+			}
+		});
+
+		// Reemplaza tu función procesarFoto por esta:
+		function procesarFotoPerfil(archivos) {
+			let archivo;
+			if (archivos instanceof FileList) {
+				archivo = archivos[0];
+			} else if (archivos && archivos.length > 0) {
+				archivo = archivos[0];
+			} else {
+				archivo = archivos; // Si ya era un archivo único suelto, lo dejamos tal cual
+			}
+
+			// Si el usuario canceló la selección o la lista vino vacía, salimos
+			if (!archivo) return;
+
+			// Validación de tipo de archivo
+			if (!archivo.type.startsWith('image/')) {
+				alert("ATENCIÓN\nPor favor, selecciona un archivo de imagen válido.");
+				// Limpiamos el input físico por seguridad
+				document.getElementById('avatar-input').value = "";
+				return;
+			}
+
+			const lector = new FileReader();
+			lector.onload = (evento) => {
+				const img = new Image();
+				img.onload = () => {
+					const canvas = document.createElement('canvas');
+					const ctx = canvas.getContext('2d');
+
+					const TAMANO_AVATAR = 150;
+					canvas.width = TAMANO_AVATAR;
+					canvas.height = TAMANO_AVATAR;
+
+					// Recorte inteligente (Center Crop)
+					let fuenteX = 0;
+					let fuenteY = 0;
+					let fuenteAncho = img.width;
+					let fuenteAlto = img.height;
+
+					if (img.width > img.height) {
+						fuenteAncho = img.height;
+						fuenteX = (img.width - img.height) / 2;
+					} else if (img.height > img.width) {
+						fuenteAlto = img.width;
+						fuenteY = (img.height - img.width) / 2;
+					}
+
+					ctx.drawImage(
+						img, 
+						fuenteX, fuenteY, fuenteAncho, fuenteAlto,
+						0, 0, TAMANO_AVATAR, TAMANO_AVATAR
+					);
+
+					// Compresión a JPEG liviano
+					fotoBase64 = canvas.toDataURL('image/jpeg', 0.75);
+
+					// ASIGNACIÓN: Guardamos la foto procesada inmediatamente en el localStorage
+					localStorage.setItem('chatP2PFoto', fotoBase64);
+
+					// Cambios visuales en el popup modal
+					avatarPreview.style.backgroundImage = `url(${fotoBase64})`;
+					avatarPreview.style.display = 'block';
+					avatarText.querySelector('span').innerText = "Click para cambiar de foto";
+				};
+				img.src = evento.target.result;
+			};
+			lector.readAsDataURL(archivo);
+		}
+		
+		// Iniciamos el engranaje al cargar la p谩gina
+        conectarServidor();
+
+	</script>
+</body>
+</html>

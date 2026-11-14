@@ -1,0 +1,406 @@
+:root {
+    --bg-main: #0a0c10;
+    --bg-sidebar: #161b26;
+    --bg-chat: #131722;
+    --bg-card: #222b3c;
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --success: #10b981;
+    --primary: #D9A74A; 
+    --primary-hover: #B88B3A;
+}
+
+/* 1. CONTENEDOR GLOBAL DE LA APLICACIÓN */
+body {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    margin: 0;
+    padding: 20px;
+    height: 100vh; 
+    box-sizing: border-box;
+    overflow: hidden; /* Evita scrolls extraños en toda la pantalla */
+}
+
+.app-container {
+    display: flex;
+    gap: 20px;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Modificadores y tipografías comunes */
+h3, h4 {
+    margin-top: 0;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.section-title {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+/* 2. BARRA LATERAL IZQUIERDA */
+.sidebar-left {
+    width: 310px; /* <--- Subido de 280px a 340px */
+    background-color: var(--bg-sidebar);
+    border-radius: 16px;
+    padding: 20px; 
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #222b3c;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    box-sizing: border-box;
+    flex-shrink: 0; 
+}
+
+/* 4. PANEL DERECHO DEL TODO (MÁS ESTRECHO) */
+.sidebar-right-panel {
+    width: 270px; /* <--- Bajado de 280px a 240px */
+    flex-shrink: 0; 
+    background-color: var(--bg-chat); 
+    padding: 20px; 
+    border-left: 1px solid #222b3c;
+    border-radius: 16px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+
+.profile-header {
+    font-size: 1.1rem;
+    margin: 0 0 15px 0;
+    width: 100%;
+}
+
+#mi-id {
+    justify-content: flex-start; 
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff !important; 
+    font-weight: bold; 
+    border: 2px solid #ffffff; 
+    padding: 8px 14px; 
+    border-radius: 20px; 
+    background-color: rgba(255,255,255,0.05); 
+    width: 100%; 
+    box-sizing: border-box;
+}
+
+.btn-general {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.btn-appear {
+    background-color: #D9A74A; /* Asignado un color llamativo si deseas diferenciarlo */
+}
+
+.btn-create {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-general:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.leave-container {
+    text-align: center; 
+    margin-bottom: 15px;
+}
+
+.btn-abandonar {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.btn-abandonar:hover {
+    color: #ff4d4d;
+}
+
+.separator {
+    border: 0; 
+    border-top: 1px solid #222b3c; 
+    margin: 10px 0; 
+    width: 100%;
+}
+
+/* 3. PANEL DE CONVERSACIÓN (CENTRO PERFECTO) */
+.chat-main-panel {
+    flex-grow: 1; 
+    background-color: var(--bg-chat); 
+    border-radius: 16px; 
+    padding: 20px; 
+    display: flex; 
+    flex-direction: column;  
+    border: 1px solid #1e2538; 
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4); 
+    box-sizing: border-box;
+    height: 100%;
+}
+
+.chat-header-top h2 {
+    margin: 0 0 15px 0;
+    color: #ffffff;
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 0; /* Obliga a flexbox a respetar la altura del padre y no desbordar */
+}
+
+.chat-messages {
+    flex-grow: 1; 
+    overflow-y: auto; 
+    margin-bottom: 15px;
+    min-height: 0; 
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    scrollbar-width: thin;          
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent; 
+}
+
+.subtitle { 
+    color: #8e9bb0; 
+    margin: auto auto; /* Centra el mensaje de bienvenida tanto vertical como horizontalmente */
+    font-size: 0.85rem; 
+    line-height: 1.4; 
+    text-align: center;
+}
+
+/* Barra inferior de entrada de texto fija abajo */
+.chat-input-area { 
+    padding: 10px; 
+    display: flex; 
+    gap: 8px; 
+    border-top: 1px solid #262d3d; 
+    background-color: #12161f; 
+    border-radius: 8px;
+}
+
+.chat-input-area input { 
+    flex: 1; 
+    padding: 14px; 
+    border-radius: 12px; 
+    border: 1px solid #222b3c; 
+    background-color: var(--bg-main); 
+    color: white; 
+    outline: none;
+    font-family: inherit;
+    font-size: 0.95rem; 
+}
+
+.chat-input-area input:focus {
+    border-color: var(--primary);
+}
+
+.chat-input-area button { 
+    background-color: #D9A74A;
+    color: white; 
+    padding: 0 20px; 
+    border-radius: 12px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    transition: all 0.2s ease;
+}
+
+.chat-input-area button:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+.empty-state-text {
+    color: var(--text-muted); 
+    font-size: 0.85rem; 
+    font-style: italic;
+}
+
+/* BURBUJAS DE MENSAJES (Sección interna) */
+.msg {
+    display: block;        
+    max-width: 65%;       
+    padding: 6px 7px;
+    padding-top: 18px; 
+    border-radius: 12px;
+    width: fit-content;    
+    position: relative;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.msg-line { margin: 6px 0; line-height: 1.4; }
+
+.msg .chat-time {
+    font-size: 0.72rem;
+    color: #667781;
+    align-self: flex-end;
+    top: 4px; 
+    right: 4px;
+    user-select: none;
+    position: absolute;
+}
+
+.msg .chat-author {
+    font-size: 0.92rem;
+}
+
+.msg .chat-text {
+	font-size: 0.92rem;
+}
+
+.msg.me {
+    align-self: flex-end;
+    background-color: #d9fdd3;
+    color: #111b21;
+    border-top-right-radius: 2px; 
+}
+
+.msg.other {
+    align-self: flex-start;
+    background-color: #ffffff;
+    color: #111b21;
+    border-top-left-radius: 2px;
+}
+
+/* ELEMENTOS DE LISTAS INTERNAS (Usuarios y salas) */
+.chats-list-users {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;       
+    height: 100%;
+    padding-right: 10px; 
+    scrollbar-gutter: stable; 
+    scrollbar-width: thin;          
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent; 
+    gap: 8px;
+}
+
+/* Busca esto en la sección de listas internas de tu CSS y déjalo así: */
+.usuario-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* 👈 Esto empuja los botones a la derecha y el nombre a la izquierda */
+    width: 100%;
+    box-sizing: border-box; 
+    gap: 10px;
+    overflow: hidden;
+    flex-shrink: 0; 
+    padding: 12px; 
+    background-color: var(--bg-card);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 8px;
+    cursor: default; /* Sin mano en el fondo */
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.usuario-item:hover { 
+    background-color: #242f44; 
+}
+
+.usuario-item.seleccionado { 
+    border: 2px solid var(--success, #10b981) !important; 
+    background-color: rgba(16, 185, 129, 0.08); 
+    border-radius: 12px; 
+    cursor: default;
+    font-weight: 600;
+}
+
+/* --- ESTILOS PARA LOS BOTONES INTERNOS DE UNIRSE/SALIR --- */
+.btn-accion {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer; /* 🫵 La mano solo aparece en el botón */
+    border: none;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-accion.unirse {
+    background-color: var(--success, #10b981);
+    color: white;
+}
+.btn-accion.unirse:hover {
+    background-color: #0d9668;
+}
+
+.btn-accion.salir {
+    background-color: #ef4444;
+    color: white;
+}
+.btn-accion.salir:hover {
+    background-color: #dc2626;
+}
+
+
+.usuario-nombre {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* AVATARES */
+.avatar-lista, .avatar-img, .avatar-inicial {
+    flex-shrink: 0; 
+    width: 32px; 
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.avatar-inicial {
+    background-color: #007bff;
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* SCROLLBAR CUSTOMS (CHROME/EDGE/SAFARI) */
+.chat-messages::-webkit-scrollbar,
+.chats-list-users::-webkit-scrollbar {
+    width: 8px;           
+}
+.chat-messages::-webkit-scrollbar-track,
+.chats-list-users::-webkit-scrollbar-track {
+    background: transparent; 
+}
+.chat-messages::-webkit-scrollbar-thumb,
+.chats-list-users::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.15); 
+    border-radius: 20px;                         
+    border: 1px solid transparent;               
+    transition: background-color 0.2s ease;
+}
+.chat-messages::-webkit-scrollbar-thumb:hover,
+.chats-list-users::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.3); 
+}

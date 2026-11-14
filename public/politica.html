@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de la Web • MeetP2P</title>
+    <style>
+        :root {
+            --bg-main: #0a0c10;
+            --bg-card: #131722;
+            --bg-nav: #161b26;
+            --primary: #D9A74A;
+            --primary-hover: #e02f5e;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --accent-green: #10b981;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* CABECERA (NAVBAR) */
+        .navbar {
+            background-color: var(--bg-nav);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #222b3c;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-logo {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-logo span {
+            color: var(--primary);
+        }
+
+        .btn-back {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .btn-back:hover {
+            color: var(--primary);
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        .main-content {
+            flex: 1;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .policy-container {
+            background-color: var(--bg-card);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            border: 1px solid #1e2538;
+        }
+
+        h1 {
+            color: var(--text-main);
+            font-size: 2.2rem;
+            margin-top: 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #222b3c;
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        p, li {
+            color: var(--text-muted);
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        ul {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .highlight-box {
+            background: rgba(254, 60, 114, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin: 25px 0;
+        }
+
+        .highlight-box p {
+            color: var(--text-main);
+            margin: 0;
+            font-weight: 500;
+        }
+
+        /* PIE DE PÁGINA */
+        .footer {
+            background-color: var(--bg-nav);
+            padding: 20px 40px;
+            text-align: center;
+            border-top: 1px solid #222b3c;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 600px) {
+            .navbar { padding: 15px 20px; }
+            .policy-container { padding: 25px 20px; border-radius: 16px; }
+            h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABECERA -->
+    <header class="navbar">
+		<a href="#" class="nav-logo">
+            🔀 App <span>OpenP2P</span>
+        </a>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        <div class="policy-container">
+            <h1>Política de la Web y Términos de Uso</h1>
+            
+            <p>Bienvenido a nuestra plataforma. Antes de utilizar nuestra app, es indispensable que leas y comprendas las bases tecnológicas y legales bajo las cuales opera este sitio.</p>
+
+            <!-- Cuadro de exención de responsabilidad solicitado -->
+            <div class="highlight-box">
+                <h2>⚠️ Aviso Importante de Responsabilidad</h2>
+                <p>Al ser una red directa peer-to-peer (P2P), las conexiones se realizan única y exclusivamente de navegador a navegador, de forma privada y sin intermediarios. Esta plataforma no almacena, modera, intercepta ni tiene acceso a tus datos. Por lo tanto, el sitio se exime de cualquier responsabilidad respecto a las conversaciones, archivos (de cualquier tipo y formato), conductas o contenidos intercambiados entre los usuarios de forma privada.</p>
+            </div>
+
+            <h2>1. Naturaleza Tecnológica (P2P)</h2>
+            <p>A diferencia de las aplicaciones tradicionales, esta plataforma funciona mediante tecnología descentralizada. Cuando te conectas con otro usuario:</p>
+            <ul>
+                <li>La información viaja de tu dispositivo al suyo sin pasar por un servidor central en internet.</li>
+                <li>No existe ninguna base de datos donde se guarden tus mensajes, archivos o historial de interacciones.</li>
+                <li>Toda la sesión es efímera: en el momento en que cierras la pestaña o el navegador, tu perfil temporal y tus datos desaparecen por completo de la red.</li>
+            </ul>
+
+            <h2>2. Responsabilidad del Usuario</h2>
+            <p>Dado que no existe un administrador central con capacidad de supervisar o auditar los chats en tiempo real, tú eres el único responsable de:</p>
+            <ul>
+                <li>La veracidad de la información y archivos (de cualquier tipo y formato) que decidas compartir a los usuarios con los que conectas.</li>
+                <li>Proteger tu identidad, datos bancarios, redes sociales o cualquier información sensible durante tus conversaciones.</li>
+                <li>Mantener una conducta respetuosa, ética y legal con los demás participantes de la red.</li>
+            </ul>
+
+            <h2>3. Contenido de Terceros</h2>
+            <p>La plataforma no puede previsualizar, filtrar ni bloquear los archivos o textos compartidos por otros usuarios. Si decides utilizar este servicio, aceptas el riesgo de que la otra parte comparta material que consideres inapropiado, siendo tu única herramienta de protección cerrar la conexión de forma inmediata.</p>
+        </div>
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="footer">
+        <div>
+			&copy; 2026 App OpenP2P • Comunicaciones Cifradas, Privadas y Descentralizadas
+        </div>
+    </footer>
+
+</body>
+</html>
