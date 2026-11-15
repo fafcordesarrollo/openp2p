@@ -522,6 +522,49 @@ if (datos.tipo === 'recibir-historial-p2p') {
 	}
 
 
+function crearGloboMensaje(remitente, nombre, texto, fechaHora) {
+	const mBox = document.createElement('div');
+	mBox.className = `msg ${remitente}`;
+	
+	// 1. Marca de tiempo
+	const timeSpan = document.createElement('span');
+	timeSpan.className = 'chat-time';
+	
+	if (fechaHora) {
+		timeSpan.textContent = fechaHora;
+	} else {
+		const ahora = new Date();
+		const hora = ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });  
+		timeSpan.textContent = `${hora}`;
+	}
+	
+	// 2. Nombre del usuario
+	const nameSpan = document.createElement('strong');
+	nameSpan.className = 'chat-author';
+	nameSpan.textContent = remitente === 'me' ? "Tú: " : `${nombre || "Usuario"}: `;
+	
+	mBox.appendChild(timeSpan);
+	mBox.appendChild(nameSpan);
+
+	// 3. Detectar si es Nota de Voz o Texto normal
+	if (typeof texto === 'string' && texto.startsWith('AUDIO_VOICE::')) {
+		const audioSrc = texto.replace('AUDIO_VOICE::', '');
+		const audioEl = document.createElement('audio');
+		audioEl.controls = true;
+		audioEl.src = audioSrc;
+		audioEl.className = 'chat-audio-player';
+		mBox.appendChild(audioEl);
+	} else {
+		const textSpan = document.createElement('span');
+		textSpan.className = 'chat-text';
+		textSpan.textContent = texto; 
+		mBox.appendChild(textSpan);
+	}
+	
+	return mBox;
+}
+	
+	/* OJO
 	function crearGloboMensaje(remitente, nombre, texto, fechaHora) {
 		const mBox = document.createElement('div');
 		mBox.className = `msg ${remitente}`;
@@ -557,6 +600,7 @@ if (datos.tipo === 'recibir-historial-p2p') {
 		
 		return mBox;
 	}
+	*/
 
 	// CONMUTADOR DE CONVERSACIONES: Limpia alertas al abrir el chat
 	function cambiarDeChat(idDestino) {
@@ -1268,4 +1312,269 @@ function ejecutarBloqueoUsuario(grupoId, infractorId, nombreInfractor) {
     }
 }
 
+
 	
+// --- LÓGICA DEL BUSCADOR DE GRUPOS ACTIVOS ---
+const btnAbrirBusqueda = document.getElementById('btnAbrirBusqueda');
+const btnCerrarBusqueda = document.getElementById('btnCerrarBusqueda');
+const modalBusqueda = document.getElementById('modalBusqueda');
+const inputBusquedaGrupo = document.getElementById('inputBusquedaGrupo');
+const resultadosBusqueda = document.getElementById('resultadosBusqueda');
+
+// --- LÓGICA DEL BUSCADOR DE GRUPOS ACTIVOS ---
+function abrirBuscadorGrupos() {
+  const modal = document.getElementById('modalBusqueda');
+  const input = document.getElementById('inputBusquedaGrupo');
+  
+  if (modal && input) {
+    modal.style.display = 'flex';
+    input.value = '';
+    input.focus();
+    filtrarGruposActivos('');
+  }
+}
+
+function cerrarBuscadorGrupos() {
+  const modal = document.getElementById('modalBusqueda');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+// Filtrar mientras el usuario escribe
+document.addEventListener('input', function(e) {
+  if (e.target && e.target.id === 'inputBusquedaGrupo') {
+    filtrarGruposActivos(e.target.value.toLowerCase().trim());
+  }
+});
+
+// Cerrar el popup al hacer clic fuera de la caja oscura
+window.addEventListener('click', function(e) {
+  const modal = document.getElementById('modalBusqueda');
+  if (e.target === modal) {
+    cerrarBuscadorGrupos();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') cerrarBuscadorGrupos();
+});
+
+// Asegurar que el filtro se ejecute al escribir o pegar texto
+const campoBusqueda = document.getElementById('inputBusquedaGrupo');
+if (campoBusqueda) {
+  campoBusqueda.oninput = function() {
+    filtrarGruposActivos(this.value.toLowerCase().trim());
+  };
+}
+
+function filtrarGruposActivos(textoBusqueda) {
+  const resultadosBusqueda = document.getElementById('resultadosBusqueda');
+  if (!resultadosBusqueda) return;
+
+  resultadosBusqueda.innerHTML = '';
+  const tarjetasGrupos = document.querySelectorAll('#lista-grupos-conectados > div');
+
+  tarjetasGrupos.forEach(tarjeta => {
+    // 1. Extraemos SOLO la primera línea de texto (el título del grupo)
+    // Así ignoramos "1 participantes", "Cerrar", "Unirse", etc.
+    const lineasTexto = tarjeta.innerText.split('\n').map(l => l.trim()).filter(Boolean);
+    const tituloGrupo = lineasTexto.length > 0 ? lineasTexto[0].toLowerCase() : '';
+	const quitarTildes = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    // 2. Comprobamos si el título contiene lo que el usuario escribió
+    if (quitarTildes(tituloGrupo).includes(quitarTildes(textoBusqueda))) {
+      const clonTarjeta = tarjeta.cloneNode(true);
+      const botonOriginal = tarjeta.querySelector('button');
+      const botonClonado = clonTarjeta.querySelector('button');
+
+      if (botonOriginal && botonClonado) {
+        botonClonado.removeAttribute('onclick');
+        botonClonado.addEventListener('click', (e) => {
+          e.stopPropagation();
+          botonOriginal.click();
+          cerrarBuscadorGrupos();
+        });
+      }
+
+      resultadosBusqueda.appendChild(clonTarjeta);
+    }
+  });
+
+  if (resultadosBusqueda.children.length === 0) {
+    resultadosBusqueda.innerHTML = '<p style="color: #a0aec0; text-align: center; font-size: 0.9rem; margin: 15px 0;">No se encontraron grupos que coincidan.</p>';
+  }
+}
+
+// Archivos de voz
+// =========================================================
+// --- GESTIÓN DE NOTAS DE VOZ (SIN CARGA EN SERVIDOR) ---
+// =========================================================
+let mediaRecorder = null;
+let fragmentosAudio = [];
+let estaGrabandoAudio = false;
+let intervaloTiempoAudio = null;
+let segundosGrabados = 0;
+const MAX_SEGUNDOS_AUDIO = 30; // Límite de 30s para mantener consumo mínimo en Render
+
+const iconoMicroSVG = `
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+    <line x1="12" y1="19" x2="12" y2="23"></line>
+    <line x1="8" y1="23" x2="16" y2="23"></line>
+  </svg>`;
+
+const iconoStopSVG = `
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+  </svg>`;
+
+// Sincroniza automáticamente el estado disabled del micrófono con el de chatInputField
+const campoTextoRef = document.getElementById('chatInputField');
+const btnMicroRef = document.getElementById('recordAudioBtn');
+
+if (campoTextoRef && btnMicroRef) {
+  const observerMicro = new MutationObserver(() => {
+    btnMicroRef.disabled = campoTextoRef.disabled;
+    if (campoTextoRef.disabled && estaGrabandoAudio) {
+      detenerYEnviarAudio(false); // Cancela si te expulsan o sales del grupo grabando
+    }
+  });
+  observerMicro.observe(campoTextoRef, { attributes: true, attributeFilter: ['disabled'] });
+
+  btnMicroRef.addEventListener('click', () => {
+    if (!estaGrabandoAudio) {
+      iniciarGrabacionVoz();
+    } else {
+      detenerYEnviarAudio(true);
+    }
+  });
+}
+
+async function iniciarGrabacionVoz() {
+  if (!grupoSeleccionadoId && !idUsuarioChateando) return;
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    
+    // Usamos bitrate bajo (24kbps) ideal para voz: 30s pesan menos de 90 KB
+    const opciones = { audioBitsPerSecond: 24000 };
+    mediaRecorder = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+      ? new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus', ...opciones })
+      : new MediaRecorder(stream, opciones);
+
+    fragmentosAudio = [];
+    estaGrabandoAudio = true;
+    segundosGrabados = 0;
+
+    // Actualizar aspecto del botón a grabando
+    btnMicroRef.classList.add('grabando');
+    btnMicroRef.innerHTML = `${iconoStopSVG} <span style="font-size:0.8rem; font-weight:bold;">0:00</span>`;
+
+    intervaloTiempoAudio = setInterval(() => {
+      segundosGrabados++;
+      const segFormateados = segundosGrabados < 10 ? `0${segundosGrabados}` : segundosGrabados;
+      btnMicroRef.innerHTML = `${iconoStopSVG} <span style="font-size:0.8rem; font-weight:bold;">0:${segFormateados}</span>`;
+
+      if (segundosGrabados >= MAX_SEGUNDOS_AUDIO) {
+        detenerYEnviarAudio(true); // Envío automático al llegar a 30s
+      }
+    }, 1000);
+
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data && e.data.size > 0) fragmentosAudio.push(e.data);
+    };
+
+    mediaRecorder.onstop = () => {
+      // Apagamos siempre el micrófono del navegador al terminar
+      stream.getTracks().forEach(track => track.stop());
+
+      if (!mediaRecorder.enviarAlParar || fragmentosAudio.length === 0) return;
+
+      const audioBlob = new Blob(fragmentosAudio, { type: mediaRecorder.mimeType || 'audio/webm' });
+      const reader = new FileReader();
+      reader.readAsDataURL(audioBlob);
+      reader.onloadend = () => {
+        enviarNotaDeVozPorWS(`AUDIO_VOICE::${reader.result}`);
+      };
+    };
+
+    mediaRecorder.start();
+  } catch (err) {
+    console.error("Error al acceder al micrófono:", err);
+    alert("No se pudo acceder al micrófono. Asegúrate de dar permisos en tu navegador y usar HTTPS o localhost.");
+    resetearBotonMicro();
+  }
+}
+
+function detenerYEnviarAudio(enviar = true) {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.enviarAlParar = enviar;
+    mediaRecorder.stop();
+  }
+  resetearBotonMicro();
+}
+
+function resetearBotonMicro() {
+  estaGrabandoAudio = false;
+  clearInterval(intervaloTiempoAudio);
+  if (btnMicroRef) {
+    btnMicroRef.classList.remove('grabando');
+    btnMicroRef.innerHTML = iconoMicroSVG;
+  }
+}
+
+function enviarNotaDeVozPorWS(payloadAudio) {
+  const esChatIndividual = !!idUsuarioChateando;
+  const esChatGrupo = !!grupoSeleccionadoId;
+  if (!esChatIndividual && !esChatGrupo) return;
+
+  const ahora = new Date();
+  const fechaHoraActual = ahora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  const container = document.getElementById('chatMessagesContainer');
+  if (container) {
+    const mensajeBienvenida = container.querySelector('.subtitle');
+    if (mensajeBienvenida || container.innerText.includes("Sala unida")) {
+      container.innerHTML = '';
+    }
+    const mBox = crearGloboMensaje('me', nombreUsuario || "Tú", payloadAudio, fechaHoraActual);
+    container.appendChild(mBox);
+  }
+  hacerScrollAlFinal();
+
+  if (esChatGrupo) {
+    if (!historialChats[grupoSeleccionadoId]) historialChats[grupoSeleccionadoId] = [];
+    historialChats[grupoSeleccionadoId].push({
+      remitente: 'me',
+      texto: payloadAudio,
+      nombre: nombreUsuario || "Creador",
+      hora: fechaHoraActual
+    });
+
+    ws.send(JSON.stringify({
+      tipo: 'enviar-mensaje-grupo',
+      grupoId: grupoSeleccionadoId,
+      desdeId: miId,
+      desdeNombre: nombreUsuario || "Creador",
+      texto: payloadAudio
+    }));
+  } else if (esChatIndividual) {
+    ultimosMovimientos[idUsuarioChateando] = Date.now();
+    if (!historialChats[idUsuarioChateando]) historialChats[idUsuarioChateando] = [];
+    historialChats[idUsuarioChateando].push({
+      remitente: 'me',
+      texto: payloadAudio,
+      hora: fechaHoraActual
+    });
+
+    ws.send(JSON.stringify({
+      tipo: 'enviar-mensaje',
+      destinoId: idUsuarioChateando,
+      desdeId: miId,
+      desdeNombre: nombreUsuario || "Creador",
+      texto: payloadAudio
+    }));
+  }
+}

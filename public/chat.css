@@ -384,6 +384,157 @@ h3, h4 {
     font-size: 14px;
 }
 
+/* Alineación del título y la lupa */
+.header-grupos-activos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.header-grupos-activos .section-title {
+  margin: 0;
+}
+
+.btn-lupa {
+  background: none;
+  border: none;
+  color: #a0aec0;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.btn-lupa:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Estilos del Popup de Búsqueda (a juego con tu diseño) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.modal-contenido {
+  background-color: #1e2530;
+  border: 1px solid #222b3c;
+  color: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  box-sizing: border-box;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.cerrar-modal {
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  color: #a0aec0;
+}
+
+.cerrar-modal:hover {
+  color: #ffffff;
+}
+
+#inputBusquedaGrupo {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #222b3c;
+  background-color: #111622;
+  color: #ffffff;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+  margin-bottom: 15px;
+}
+
+#inputBusquedaGrupo:focus {
+  outline: none;
+  border-color: #6390b3;
+}
+
+.lista-resultados {
+  max-height: 280px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+
+/* Botón de micrófono */
+.btn-micro {
+  background-color: #262e38;
+  color: #ffffff;
+  border: 1px solid #3a444e;
+  border-radius: 6px;
+  padding: 0 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-micro:hover:not(:disabled) {
+  background-color: #323c49;
+}
+
+.btn-micro:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Estado grabando */
+.btn-micro.grabando {
+  background-color: #ef4444;
+  border-color: #ef4444;
+  color: white;
+  animation: pulsoGrabacion 1.2s infinite;
+}
+
+@keyframes pulsoGrabacion {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* Reproductor de audio dentro del globo */
+.chat-audio-player {
+  max-width: 240px;
+  height: 36px;
+  margin-top: 6px;
+  display: block;
+  border-radius: 20px;
+}
+
 /* SCROLLBAR CUSTOMS (CHROME/EDGE/SAFARI) */
 .chat-messages::-webkit-scrollbar,
 .chats-list-users::-webkit-scrollbar {
