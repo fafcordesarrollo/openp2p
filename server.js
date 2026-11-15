@@ -1,7 +1,43 @@
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
 const { WebSocketServer } = require('ws');
 
-const wss = new WebSocketServer({ port: 8080 });
-console.log('Servidor activo en ws://localhost:8080');
+const PORT = process.env.PORT || 8080;
+
+// 1. Creamos un servidor HTTP para servir tus archivos .html, .css y .js
+const server = http.createServer((req, res) => {
+    let filePath = path.join(__dirname, 'public', req.url === '/' ? 'index.html' : req.url);
+    const ext = path.extname(filePath);
+    
+    const mimeTypes = {
+        '.html': 'text/html',
+        '.css': 'text/css',
+        '.js': 'text/javascript',
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.svg': 'image/svg+xml'
+    };
+
+    fs.readFile(filePath, (err, content) => {
+        if (err) {
+            res.writeHead(err.code === 'ENOENT' ? 404 : 500);
+            res.end(err.code === 'ENOENT' ? 'Archivo no encontrado' : 'Error interno');
+        } else {
+            res.writeHead(200, { 'Content-Type': mimeTypes[ext] || 'application/octet-stream' });
+            res.end(content, 'utf-8');
+        }
+    });
+});
+
+// 2. Conectamos el WebSocketServer al mismo servidor HTTP
+const wss = new WebSocketServer({ server });
+
+// 3. Arrancamos ambos en el puerto asignado
+server.listen(PORT, () => {
+    console.log(`Servidor activo en el puerto ${PORT}`);
+});
+
 
 // Conjunto para almacenar los nombres de usuario activos
 const usuariosConectados = new Set();
