@@ -1,43 +1,7 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
 const { WebSocketServer } = require('ws');
 
-const PORT = process.env.PORT || 8080;
-
-// 1. Creamos un servidor HTTP para servir tus archivos .html, .css y .js
-const server = http.createServer((req, res) => {
-    let filePath = path.join(__dirname, 'public', req.url === '/' ? 'index.html' : req.url);
-    const ext = path.extname(filePath);
-    
-    const mimeTypes = {
-        '.html': 'text/html',
-        '.css': 'text/css',
-        '.js': 'text/javascript',
-        '.png': 'image/png',
-        '.jpg': 'image/jpeg',
-        '.svg': 'image/svg+xml'
-    };
-
-    fs.readFile(filePath, (err, content) => {
-        if (err) {
-            res.writeHead(err.code === 'ENOENT' ? 404 : 500);
-            res.end(err.code === 'ENOENT' ? 'Archivo no encontrado' : 'Error interno');
-        } else {
-            res.writeHead(200, { 'Content-Type': mimeTypes[ext] || 'application/octet-stream' });
-            res.end(content, 'utf-8');
-        }
-    });
-});
-
-// 2. Conectamos el WebSocketServer al mismo servidor HTTP
-const wss = new WebSocketServer({ server });
-
-// 3. Arrancamos ambos en el puerto asignado
-server.listen(PORT, () => {
-    console.log(`Servidor activo en el puerto ${PORT}`);
-});
-
+const wss = new WebSocketServer({ port: 8080 });
+console.log('Servidor activo en ws://localhost:8080');
 
 // Conjunto para almacenar los nombres de usuario activos
 const usuariosConectados = new Set();
@@ -141,35 +105,27 @@ wss.on('connection', (ws) => {
             }
         }
 
-		// === SALIR / CERRAR GRUPO ===
+		// === SALIR DE UN GRUPO (PARTICIPANTE O CREADOR TEMPORALMENTE) ===
 		if (datos.tipo === 'salir-grupo') {
 			const grupo = gruposActivos.find(g => g.id === datos.grupoId);
 			if (grupo) {
 				const nombreQueSale = ws.nombreReal || "Un usuario";
 
-				// CASO 1: El que hace clic es un PARTICIPANTE
-				if (grupo.creadorId !== ws.userId) {
-					// 1. Notificamos al resto de miembros de este grupo específico
-					wss.clients.forEach(client => {
-						if (client.userId !== ws.userId && grupo.miembros.has(client.userId)) {
-							client.send(JSON.stringify({
-								tipo: 'recibir-notificacion-sistema',
-								grupoId: grupo.id,
-								texto: `${nombreQueSale} se ha salido del grupo`
-							}));
-						}
-					});
+				// 1. Notificamos al resto de miembros de este grupo específico
+				wss.clients.forEach(client => {
+					if (client.userId !== ws.userId && grupo.miembros.has(client.userId)) {
+						client.send(JSON.stringify({
+							tipo: 'recibir-notificacion-sistema',
+							grupoId: grupo.id,
+							texto: `${nombreQueSale} se ha salido del grupo`
+						}));
+					}
+				});
 
-					// 2. Lo eliminamos ÚNICAMENTE a él del Set de miembros
-					grupo.miembros.delete(ws.userId);
-				} 
-				// CASO 2: El que hace clic es el CREADOR REAL del grupo
-				else {
-					// Llamamos a tu función destructora pasándole los datos correctos
-					destruirGruposPorCreador(ws.userId, datos.grupoId);
-				}
+				// 2. Lo eliminamos únicamente de los miembros activos, manteniendo el grupo vivo
+				grupo.miembros.delete(ws.userId);
 
-				// Sincronizamos los cambios para todos los usuarios del servidor
+				// 3. Sincronizamos los cambios para todos los usuarios del servidor
 				broadcastUsuarios();
 			}
 		}
