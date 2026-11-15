@@ -822,7 +822,9 @@ function enviarRespuestaTexto() {
         container.appendChild(mBox); 
     }
     
-    chatInputField.value = ''; // Limpia el input físicamente en pantalla
+	chatInputField.value = ''; 
+	chatInputField.style.height = 'auto'; 
+	chatInputField.style.overflowY = 'hidden'; 
     hacerScrollAlFinal();
 
     if (esChatGrupo) {
@@ -860,7 +862,23 @@ function enviarRespuestaTexto() {
     }
 }
 	sendChatBtn.addEventListener('click', enviarRespuestaTexto); 
-	chatInputField.addEventListener('keypress', (e) => { if(e.key === 'Enter') enviarRespuestaTexto(); });
+	// 1. Auto-expansión dinámica según el ancho real del dispositivo
+	chatInputField.addEventListener('input', function() {
+		this.style.height = 'auto'; // Resetea para recalcular si el usuario borra texto
+		const nuevaAltura = this.scrollHeight;
+		this.style.height = nuevaAltura + 'px';
+    
+		// Si llega al tope de 120px del CSS, activa el scroll interno
+		this.style.overflowY = nuevaAltura >= 120 ? 'auto' : 'hidden';
+	});
+	
+	// OJO chatInputField.addEventListener('keypress', (e) => { if(e.key === 'Enter') enviarRespuestaTexto(); });
+	chatInputField.addEventListener('keydown', (e) => {
+		if (e.key === 'Enter' && !e.shiftKey) {
+			e.preventDefault(); // Evita que escriba un salto de línea vacío
+			enviarRespuestaTexto();
+		}
+	});
 
 	function reproducirSonidoNotificacion() {
 		try {
@@ -1023,14 +1041,18 @@ function actualizarListaGrupos(grupos) {
 			: '';
 		
 		// REGLA DE EXCLUSIVIDAD: Eres miembro del grupo si es el que tienes seleccionado actualmente o estás en su lista
-		// OJO const yaSoyMiembro = (grupoSeleccionadoId === grupo.id) || (grupo.miembrosIds && grupo.miembrosIds.includes(miId));
-		const yaSoyMiembro = grupo.miembrosIds && grupo.miembrosIds.includes(miId);
+		// OJO const yaSoyMiembro = grupo.miembrosIds && grupo.miembrosIds.includes(miId);
+		const yaSoyMiembro = (grupo.creadorId === miId) || (grupo.miembrosIds && grupo.miembrosIds.includes(miId));
 		
 		// Manejo dinámico del clic y tooltip (title) en la tarjeta
 		if (yaSoyMiembro) {
 			item.setAttribute('title', 'Haz clic para entrar en este grupo');
 			item.style.cursor = 'pointer';
 			item.onclick = () => {
+				// Si eres el creador pero te habías desconectado, te vuelves a unir silenciosamente al hacer clic
+				if (!grupo.miembrosIds.includes(miId)) {
+					unirseAGrupo(grupo.id);
+				}
 				seleccionarGrupo(grupo.id, grupo.descripcion, true);
 			};
 		} else {

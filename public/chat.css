@@ -197,10 +197,32 @@ h3, h4 {
 .chat-input-area { 
     padding: 10px; 
     display: flex; 
+	/* OJO añaido por que ahora es un textara el input del texto */
+	/*align-items: flex-end;*/
     gap: 8px; 
     border-top: 1px solid #262d3d; 
     background-color: #12161f; 
     border-radius: 8px;
+}
+
+
+#chatInputField {
+    resize: none;               /* Quita el triángulo de redimensionar manual */
+    overflow-y: hidden;         /* Oculta el scroll mientras crece */
+    min-height: 42px;           /* Altura inicial (ajústala a la altura de tus botones) */
+    max-height: 120px;          /* Tope máximo: unas 4-5 líneas antes de hacer scroll interno */
+    line-height: 1.4;           /* Espaciado cómodo entre líneas */
+    padding: 14px; 
+    border-radius: 12px; 
+    border: 1px solid #222b3c; 
+    background-color: var(--bg-main); 
+    color: white; 
+    font-family: inherit;       /* Usa la misma fuente que el resto de la web */
+    font-size: inherit;
+    box-sizing: border-box;
+    width: 100%;
+	font-size: 0.95rem; 
+	outline: none;
 }
 
 .chat-input-area input { 
